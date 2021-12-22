@@ -4,7 +4,9 @@ shownotes();
 let addbtn=document.getElementById('addBtn');
 addbtn.addEventListener("click",function(e) {
     let addtxt=document.getElementById('addTxt');
+    let addtitle=document.getElementById('addTitle');
     let notes=localStorage.getItem("notes");
+    let notestitle=localStorage.getItem("notestitle");
     if(notes==null)
     {
         notesobj=[];
@@ -12,29 +14,47 @@ addbtn.addEventListener("click",function(e) {
     else{
         notesobj=JSON.parse(notes);
         }
+    if(notestitle==null)
+        {
+            notestitleobj=[];
+        }
+    else{
+            notestitleobj=JSON.parse(notestitle);
+            }
     notesobj.push(addtxt.value);
+    notestitleobj.push(addtitle.value);
     localStorage.setItem("notes",JSON.stringify(notesobj));
+    localStorage.setItem("notestitle",JSON.stringify(notestitleobj));
     addtxt.value="";
-    console.log(notesobj);
+    addtitle.value="";
+    //console.log(notesobj);
     shownotes();
 })
 //function used to show notes from localstorage
 function shownotes() {
     let notes=localStorage.getItem("notes");
+    let notestitle=localStorage.getItem("notestitle");
     if(notes==null)
     {
         notesobj=[];
     }
     else{
         notesobj=JSON.parse(notes);
+        }
+    if(notestitle==null)
+        {
+            notestitleobj=[];
+        }
+    else{
+            notestitleobj=JSON.parse(notestitle);
         }
     let html="";
     notesobj.forEach(function(element,index) {
         html+=`
         <div class="notecard my-2 mx-2 card" style="width: 18rem;">
                     
-                    <div class="card-body">
-                      <h5 class="card-title">Notes ${index + 1}</h5>
+                    <div class="card-body" id="card-body">
+                      <h5 class="card-title">${[index + 1]} ${[notestitleobj[index]]}</h5>
                       <p class="card-text">${element}</p>
                       <button id="${index}" onclick="deletenote(this.id)" class="btn btn-primary">Delete</button>
                     </div>
@@ -58,6 +78,7 @@ function shownotes() {
 //function to delete note
 function deletenote(index) {
     let notes=localStorage.getItem("notes");
+    let notestitle=localStorage.getItem("notestitle");
     if(notes==null)
     {
         notesobj=[];
@@ -65,8 +86,18 @@ function deletenote(index) {
     else{
         notesobj=JSON.parse(notes);
         }
+
+    if(notestitle==null)
+        {
+            notestitleobj=[];
+        }
+    else{
+            notestitleobj=JSON.parse(notestitle);
+            }
     notesobj.splice(index,1);
+    notestitleobj.splice(index,1);
     localStorage.setItem("notes",JSON.stringify(notesobj));
+    localStorage.setItem("notestitle",JSON.stringify(notestitleobj));
     shownotes();
 
 
@@ -78,7 +109,8 @@ searchtxt.addEventListener("input",function() {
     let notecards=document.getElementsByClassName("notecard");
     Array.from(notecards).forEach(function(element) {
         let cardtxt=element.getElementsByTagName("p")[0].innerText;
-        if(cardtxt.includes(inputval))
+        let cardtxttitle=element.getElementsByTagName("h5")[0].innerText;
+        if(cardtxt.includes(inputval) || cardtxttitle.includes(inputval))
         {
             element.style.display="block";
         }
